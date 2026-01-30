@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Стили одежды - Главная</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: 
+                linear-gradient(rgba(245, 240, 247, 0.3), rgba(245, 240, 247, 0.3)),
+                url('картинки/Flowers.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #c072d5, #b21ddc);
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(178, 29, 220, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        
+        /* Гамбургер-менюшка */
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            z-index: 1001;
+        }
+        
+        .menu-icon {
+            display: block;
+            width: 30px;
+            height: 3px;
+            background-color: white;
+            margin: 6px 0;
+            transition: 0.3s;
+        }
+        
+        .menu-btn.active .menu-icon:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+        
+        .menu-btn.active .menu-icon:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .menu-btn.active .menu-icon:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+        
+        /* Боковая менюшка цвета */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 999;
+            padding-top: 80px;
+            overflow-y: auto;
+        }
+        
+        .sidebar.active {
+            right: 0;
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
+        .menu-list {
+            list-style: none;
+        }
+        
+        .menu-list li {
+            border-bottom: 1px solid #eee;
+        }
+        
+        .menu-list a {
+            display: block;
+            padding: 18px 25px;
+            color: #333;
+            text-decoration: none;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .menu-list a:hover {
+            background-color: #f8f4f9;
+            color: #b21ddc;
+            padding-left: 30px;
+        }
+        
+        .menu-list a.active {
+            background-color: #f0e8f3;
+            color: #b21ddc;
+            border-left: 4px solid #b21ddc;
+        }
+        
+        /* Основной контент цвета */
+        .main-content {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, rgba(248, 244, 249, 0.8), rgba(233, 217, 240, 0.8));
+            border-radius: 15px;
+            padding: 50px 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .hero h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            color: #555;
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto 15px;
+            text-align: justify;
+            line-height: 1.7;
+        }
+        
+        /* Цитата */
+        .quote-block {
+            background: linear-gradient(135deg, rgba(192, 114, 213, 0.1), rgba(178, 29, 220, 0.1));
+            border-left: 5px solid #b21ddc;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .quote-text {
+            font-size: 1.3rem;
+            color: #333;
+            font-style: italic;
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+        
+        .quote-author {
+            color: #666;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        
+        /* Карточки стилей цвета */
+        .styles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        .style-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        
+        .style-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(178, 29, 220, 0.2);
+        }
+        
+        .card-content {
+            padding: 25px;
+        }
+        
+        .style-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .style-card p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+        
+        .card-btn {
+            display: inline-block;
+            background-color: #c072d5;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .card-btn:hover {
+            background-color: #b21ddc;
+        }
+        
+        /* Секция ИИ-помощника цвета */
+        .ai-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 50px 40px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 40px;
+        }
+        
+        .ai-section h2 {
+            color: #b21ddc;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        
+        /* Широкая кнопка ИИ */
+        .wide-ai-button {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(to right, #c072d5, #b21ddc);
+            color: white;
+            text-decoration: none;
+            border-radius: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 40px 0;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(178, 29, 220, 0.25);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .wide-ai-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(178, 29, 220, 0.35);
+            background: linear-gradient(to right, #b21ddc, #a016d0);
+        }
+        
+        /* Затемнение */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background-color: rgba(51, 51, 51, 0.9);
+            color: white;
+            margin-top: 60px;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero {
+                padding: 40px 20px;
+            }
+            
+            .quote-text {
+                font-size: 1.1rem;
+            }
+            
+            .styles-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+            
+            .ai-section, .main-content {
+                padding: 30px 20px;
+            }
+            
+            .wide-ai-button {
+                padding: 18px;
+                font-size: 18px;
+                margin: 30px 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .styles-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .wide-ai-button {
+                padding: 16px;
+                font-size: 16px;
+                margin: 25px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Хедер с менюшки -->
+    <header class="header">
+        <a href="Главная.html" class="logo">Главная</a>
+        <button class="menu-btn" id="menuBtn">
+            <span class="menu-icon"></span>
+            <span class="menu-icon"></span>
+            <span class="menu-icon"></span>
+        </button>
+    </header>
+    
+    <!-- Боковая менюшка -->
+    <div class="overlay" id="overlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <ul class="menu-list">
+            <li><a href="Главная.html" class="active">🏠 Главная</a></li>
+            <li><a href="ИИстраничка.html">🤖 ИИ-помощник по стилю</a></li>
+            <li><a href="минимализм.html">🎯 Минимализм</a></li>
+            <li><a href="гранж.html">🎸 Гранж</a></li>
+            <li><a href="уличный.html">🏙️ Уличный стиль</a></li>
+            <li><a href="романтичный.html">💖 Романтичный</a></li>
+            <li><a href="деловой.html">💼 Деловой</a></li>
+            <li><a href="готика.html">🖤 Готика</a></li>
+            <li><a href="классический.html">👔 Классический</a></li>
+            <li><a href="глэм-рок.html">🌟 Глэм-рок</a></li>
+        </ul>
+    </nav>
+    
+    <!--  Контент главной странички -->
+    <main class="main-content">
+        <section class="hero">
+            <h1>Найдите свой уникальный стиль</h1>
+            <p>Одежда — это визитная карточка личности, способ самовыражения и инструмент коммуникации с окружающим миром. В современном мире мода — это диалог между трендами и индивидуальностью, где каждый может найти гармонию между комфортом и эстетикой.</p>
+            
+            <p>Гид по стилям одежды создан для тех, кто хочет разобраться в многообразии модных направлений.</p>
+            
+            <p>От классических канонов делового стиля до бунтарского духа гранжа, от романтичных кружев до утилитарного минимализма — каждый стиль несет в себе определенную философию и настроение. Здесь собраны самые популярные стилевые направления и разобраны их характерные черты, базовые элементы и правила сочетания.</p>
+        </section>
+        
+        <!-- Цитата перед ИИ-секцией -->
+        <div class="quote-block">
+            <p class="quote-text">"Мода — искусство одеваться по последним тенденциям. Стиль — искусство быть собой"</p>
+            <p class="quote-author">Оскар де ла Рент</p>
+        </div>
+        
+        <section class="ai-section">
+            <h2>Не знаете, что надеть?</h2>
+            <p style="max-width: 700px; margin: 0 auto 20px; color: #666;">
+                Наш ИИ-помощник по стилю проанализирует ваш запрос и предложит подходящие варианты одежды для любого случая: от свидания до деловой встречи. Просто опишите ситуацию, предпочтения или задайте вопрос — и получите персональные рекомендации, основанные на актуальных трендах и принципах стилевой гармонии.
+            </p>
+        </section>
+        
+        <!-- Широкая кнопка для ИИ -->
+        <a href="ИИстраничка.html" class="wide-ai-button">
+            🤖 Получить персонализированный совет от ИИ-стилиста
+        </a>
+        
+        <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Популярные стили одежды</h2>
+        
+        <div class="styles-grid">
+            <!-- Карточка 1 -->
+            <div class="style-card" onclick="window.location.href='минимализм.html'">
+                <div class="card-content">
+                    <h3>🎯 Минимализм</h3>
+                    <p>Чистые линии, нейтральные цвета и функциональность. Стиль для тех, кто ценит простоту и качество.</p>
+                    <a href="минимализм.html" class="card-btn">Узнать больше</a>
+                </div>
+            </div>
+            
+            <!-- Карточка 2 -->
+            <div class="style-card" onclick="window.location.href='готика.html'">
+                <div class="card-content">
+                    <h3>🖤 Готика</h3>
+                    <p>Темнота и таинственность. Для людей, любящих грустную музыку и жизнь при свечах.</p>
+                    <a href="готика.html" class="card-btn">Узнать больше</a>
+                </div>
+            </div>
+            
+            <!-- Карточка 3 -->
+            <div class="style-card" onclick="window.location.href='деловой.html'">
+                <div class="card-content">
+                    <h3>💼 Деловой стиль</h3>
+                    <p>Элегантность и профессионализм. Классические решения для работы и деловых встреч.</p>
+                    <a href="деловой.html" class="card-btn">Узнать больше</a>
+                </div>
+            </div>
+        </div>
+        
+    </main>
+    
+    <footer class="footer">
+        <p>© 2026 Стили одежды. Все права защищены.</p>
+        <p style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;">Сайт создан для помощи в выборе стиля одежды</p>
+    </footer>
+
+    <script>
+        // менюшка
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        
+        menuBtn.addEventListener('click', function() {
+            menuBtn.classList.toggle('active');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+        
+        overlay.addEventListener('click', function() {
+            menuBtn.classList.remove('active');
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+        
+        // Закрытие менюшки при нажатии на ссылку
+        const menuLinks = document.querySelectorAll('.menu-list a');
+        menuLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                menuBtn.classList.remove('active');
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>

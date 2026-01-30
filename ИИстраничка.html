@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ИИ-помощник по стилю</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: 
+                linear-gradient(rgba(245, 240, 247, 0.3), rgba(245, 240, 247, 0.3)),
+                url('картинки/Flowers.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #c072d5, #b21ddc);
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(178, 29, 220, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        
+        /* Гамбургер-меню */
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            z-index: 1001;
+        }
+        
+        .menu-icon {
+            display: block;
+            width: 30px;
+            height: 3px;
+            background-color: white;
+            margin: 6px 0;
+            transition: 0.3s;
+        }
+        
+        .menu-btn.active .menu-icon:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+        
+        .menu-btn.active .menu-icon:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .menu-btn.active .menu-icon:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+        
+        /* Боковая менюшка */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 999;
+            padding-top: 80px;
+            overflow-y: auto;
+        }
+        
+        .sidebar.active {
+            right: 0;
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
+        .menu-list {
+            list-style: none;
+        }
+        
+        .menu-list li {
+            border-bottom: 1px solid #eee;
+        }
+        
+        .menu-list a {
+            display: block;
+            padding: 18px 25px;
+            color: #333;
+            text-decoration: none;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .menu-list a:hover {
+            background-color: #f8f4f9;
+            color: #b21ddc;
+            padding-left: 30px;
+        }
+        
+        .menu-list a.active {
+            background-color: #f0e8f3;
+            color: #b21ddc;
+            border-left: 4px solid #b21ddc;
+        }
+        
+        /* Основной контент */
+        .main-content {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+        }
+        
+        /* Герой-секция как на главной */
+        .hero {
+            background: linear-gradient(135deg, rgba(248, 244, 249, 0.8), rgba(233, 217, 240, 0.8));
+            border-radius: 15px;
+            padding: 50px 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .hero h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            color: #555;
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto 15px;
+            text-align: left;
+            line-height: 1.7;
+        }
+        
+        /* Карточки быстрых вопросов в стиле главной */
+        .styles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .style-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        
+        .style-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(178, 29, 220, 0.2);
+        }
+        
+        .card-content {
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .style-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .style-card p {
+            color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+        
+        .card-btn {
+            display: inline-block;
+            background-color: #c072d5;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .card-btn:hover {
+            background-color: #b21ddc;
+        }
+        
+        /* Секция чата в стиле главной */
+        .ai-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 40px;
+        }
+        
+        .ai-section h2 {
+            color: #b21ddc;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        /* Чат-контейнер */
+        .chat-container {
+            width: 100%;
+            height: 500px;
+            border: none;
+            border-radius: 10px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e1d0e6;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            max-width: 80%;
+        }
+        
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+        
+        .ai-message {
+            margin-right: auto;
+        }
+        
+        .message-bubble {
+            display: inline-block;
+            padding: 12px 18px;
+            border-radius: 20px;
+            max-width: 100%;
+            word-wrap: break-word;
+            line-height: 1.5;
+        }
+        
+        .user-bubble {
+            background: linear-gradient(to right, #c072d5, #b21ddc);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .ai-bubble {
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .chat-input-area {
+            display: flex;
+            gap: 10px;
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #e1d0e6;
+            border-radius: 0 0 10px 10px;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e1d0e6;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            transition: border 0.3s;
+        }
+        
+        .chat-input:focus {
+            border-color: #c072d5;
+        }
+        
+        .chat-send-btn {
+            background: linear-gradient(to right, #c072d5, #b21ddc);
+            color: white;
+            border: none;
+            padding: 0 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            min-width: 100px;
+        }
+        
+        .chat-send-btn:hover {
+            background: linear-gradient(to right, #b21ddc, #a016d0);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(178, 29, 220, 0.25);
+        }
+        
+        .chat-send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Широкая кнопка как на главной */
+        .wide-ai-button {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(to right, #c072d5, #b21ddc);
+            color: white;
+            text-decoration: none;
+            border-radius: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 40px 0;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(178, 29, 220, 0.25);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .wide-ai-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(178, 29, 220, 0.35);
+            background: linear-gradient(to right, #b21ddc, #a016d0);
+        }
+        
+        /* Блок информации */
+        .info-box {
+            background-color: #f8f4f9;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 30px;
+            border-left: 4px solid #c072d5;
+        }
+        
+        .info-box h3 {
+            color: #b21ddc;
+            margin-bottom: 15px;
+        }
+        
+        .info-box p {
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        /* Футер */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background-color: rgba(51, 51, 51, 0.9);
+            color: white;
+            margin-top: 60px;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero {
+                padding: 40px 20px;
+            }
+            
+            .styles-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+            
+            .ai-section, .main-content {
+                padding: 30px 20px;
+            }
+            
+            .wide-ai-button {
+                padding: 18px;
+                font-size: 18px;
+                margin: 30px 0;
+            }
+            
+            .chat-container {
+                height: 400px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .styles-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .wide-ai-button {
+                padding: 16px;
+                font-size: 16px;
+                margin: 25px 0;
+            }
+            
+            .chat-input-area {
+                flex-direction: column;
+            }
+            
+            .chat-send-btn {
+                padding: 15px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Хедер с меню -->
+    <header class="header">
+        <a href="Главная.html" class="logo">ИИ-стилист</a>
+        <button class="menu-btn" id="menuBtn">
+            <span class="menu-icon"></span>
+            <span class="menu-icon"></span>
+            <span class="menu-icon"></span>
+        </button>
+    </header>
+    
+    <!-- Боковая менюшка -->
+    <div class="overlay" id="overlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <ul class="menu-list">
+            <li><a href="Главная.html">🏠 Главная</a></li>
+            <li><a href="ИИстраничка.html" class="active">🤖 ИИ-помощник по стилю</a></li>
+            <li><a href="минимализм.html">🎯 Минимализм</a></li>
+            <li><a href="гранж.html">🎸 Гранж</a></li>
+            <li><a href="уличный.html">🏙️ Уличный стиль</a></li>
+            <li><a href="романтичный.html">💖 Романтичный</a></li>
+            <li><a href="деловой.html">💼 Деловой</a></li>
+            <li><a href="готика.html">🖤 Готика</a></li>
+            <li><a href="классический.html">👔 Классический</a></li>
+            <li><a href="глэм-рок.html">🌟 Глэм-рок</a></li>
+        </ul>
+    </nav>
+    
+    <!-- Контент страницы -->
+    <main class="main-content">
+        <section class="hero">
+            <h1>🤖 Твой ИИ-помощник по стилю</h1>
+            <p>Одежда — это искусство самовыражения, но иногда сложно понять, с чего начать. Наш ИИ-помощник создан, чтобы сделать процесс подбора стиля простым, увлекательным и персонализированным.</p>
+            
+            <p>Искусственный интеллект проанализирует ваш запрос, учтет современные тренды и основные принципы стилевой гармонии, чтобы предложить идеальные варианты для любой ситуации — от деловой встречи до романтического свидания.</p>
+            
+            <p>Просто опишите ситуацию, свои предпочтения или задайте вопрос о стиле, и получите детальные рекомендации, которые помогут вам выглядеть уверенно и гармонично в любой обстановке.</p>
+        </section>
+        
+        <section class="ai-section">
+            <h2>💬 Чат с ИИ-стилистом</h2>
+            
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message ai-message">
+                        <div class="message-bubble ai-bubble">
+                            Привет! Я твой ИИ-стилист. 🎨<br><br>
+                            Могу помочь с:<br>
+                            • Определением твоего стиля<br>
+                            • Подбором образов для разных событий<br>
+                            • Сочетанием цветов в одежде<br>
+                            • Советами по гардеробу<br><br>
+                            Просто спроси, или выбери один из быстрых вопросов ниже.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-input-area">
+                    <input type="text" 
+                           class="chat-input" 
+                           id="userInput" 
+                           placeholder="Например: 'Какой стиль подойдет для собеседования?'"
+                           autocomplete="off">
+                    <button class="chat-send-btn" id="sendBtn" onclick="sendMessage()">Отправить</button>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <h3>ℹ️ Как пользоваться:</h3>
+                <p>• <strong>Напиши вопрос</strong> в поле ввода выше и нажми "Отправить"</p>
+                <p>• <strong>Выбери быстрый вопрос</strong> из карточек ниже для мгновенного ответа</p>
+                <p>• <strong>Задавай уточняющие вопросы</strong> для более точного совета</p>
+                <p>• <strong>Можно спросить про:</strong> стили, цвета, сочетания, мероприятия, сезонную одежду</p>
+            </div>
+        </section>
+        
+        <h2 style="text-align: center; margin-bottom: 30px; color: #333;">🚀 Быстрые вопросы</h2>
+        
+        <div class="styles-grid">
+            <!-- Карточка 1 -->
+            <div class="style-card" onclick="askQuickQuestion('Что надеть на первое свидание?')">
+                <div class="card-content">
+                    <h3>💖 Первое свидание</h3>
+                    <p>Идеальные образы для первого свидания, которые создадут хорошее впечатление.</p>
+                    <button class="card-btn">Спросить ИИ</button>
+                </div>
+            </div>
+            
+            <!-- Карточка 2 -->
+            <div class="style-card" onclick="askQuickQuestion('Как одеваться в университет?')">
+                <div class="card-content">
+                    <h3>🎓 Университет</h3>
+                    <p>Удобные и стильные варианты для учебных будней.</p>
+                    <button class="card-btn">Спросить ИИ</button>
+                </div>
+            </div>
+            
+            <!-- Карточка 3 -->
+            <div class="style-card" onclick="askQuickQuestion('Подбери образ для прогулки с друзьями')">
+                <div class="card-content">
+                    <h3>👫 Прогулка с друзьями</h3>
+                    <p>Неформальные и комфортные образы для встреч с друзьями.</p>
+                    <button class="card-btn">Спросить ИИ</button>
+                </div>
+            </div>
+            
+            <!-- Карточка 4 -->
+            <div class="style-card" onclick="askQuickQuestion('Как определить свой стиль?')">
+                <div class="card-content">
+                    <h3>👔 Мой стиль</h3>
+                    <p>Помощь в определении вашего уникального стилевого направления.</p>
+                    <button class="card-btn">Спросить ИИ</button>
+                </div>
+            </div>
+            
+            <!-- Карточка 5 -->
+            <div class="style-card" onclick="askQuickQuestion('Что носить зимой?')">
+                <div class="card-content">
+                    <h3>❄️ Зимний образ</h3>
+                    <p>Теплые и стильные варианты для холодного времени года.</p>
+                    <button class="card-btn">Спросить ИИ</button>
+                </div>
+            </div>
+            
+            <!-- Карточка 6 -->
+            <div class="style-card" onclick="askQuickQuestion('Как сочетать цвета в одежде?')">
+                <div class="card-content">
+                    <h3>🎨 Сочетание цветов</h3>
+                    <p>Основы цветовых комбинаций для гармоничных образов.</p>
+                    <button class="card-btn">Спросить ИИ</button>
+                </div>
+            </div>
+        </div>
+        
+        <a href="Главная.html" class="wide-ai-button">
+            ← Вернуться на главную страницу
+        </a>
+        
+    </main>
+    
+    <footer class="footer">
+        <p>© 2026 ИИ-помощник по стилю. Все права защищены.</p>
+        <p style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;">Используется искусственный интеллект для предоставления стилевых рекомендаций</p>
+    </footer>
+
+    <script>
+        // ===== НАСТРОЙКИ =====
+        const BACKEND_URL = 'https://fashion-stylist-94sc.onrender.com';
+        
+        // ===== УПРАВЛЕНИЕ МЕНЮ =====
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        
+        menuBtn.addEventListener('click', function() {
+            menuBtn.classList.toggle('active');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+        
+        overlay.addEventListener('click', function() {
+            menuBtn.classList.remove('active');
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+        
+        const menuLinks = document.querySelectorAll('.menu-list a');
+        menuLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                menuBtn.classList.remove('active');
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+        });
+        
+        // ===== ЧАТ С ИИ =====
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = `message-bubble ${sender}-bubble`;
+            bubble.innerHTML = text.replace(/\n/g, '<br>');
+            
+            messageDiv.appendChild(bubble);
+            chatMessages.appendChild(messageDiv);
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function showTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai-message';
+            typingDiv.id = 'typingIndicator';
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble ai-bubble';
+            bubble.innerHTML = '✍️ Стилист печатает...';
+            
+            typingDiv.appendChild(bubble);
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function hideTyping() {
+            const typing = document.getElementById('typingIndicator');
+            if (typing) typing.remove();
+        }
+        
+        function askQuickQuestion(question) {
+            userInput.value = question;
+            userInput.focus();
+            sendMessage();
+        }
+        
+        async function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) {
+                showPopup('Введите сообщение!', true);
+                return;
+            }
+            
+            userInput.value = '';
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+            sendBtn.textContent = '⏳';
+            
+            addMessage(message, 'user');
+            showTyping();
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        userId: 'web-user'
+                    })
+                });
+                
+                hideTyping();
+                const data = await response.json();
+                
+                if (data.success) {
+                    addMessage(data.reply, 'ai');
+                } else {
+                    addMessage(`❌ Ошибка: ${data.error}`, 'ai');
+                    showPopup('Ошибка при получении ответа', true);
+                }
+                
+            } catch (error) {
+                hideTyping();
+                addMessage('⚠️ Не могу подключиться к серверу.<br>Проверьте подключение к интернету.', 'ai');
+                showPopup('Ошибка соединения с сервером!', true);
+                console.error('Ошибка чата:', error);
+            } finally {
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Отправить';
+                userInput.focus();
+            }
+        }
+        
+        function showPopup(message, isError = false) {
+            const popup = document.createElement('div');
+            popup.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${isError ? '#F44336' : '#4CAF50'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                z-index: 10000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                animation: slideIn 0.3s ease;
+            `;
+            popup.textContent = message;
+            document.body.appendChild(popup);
+            
+            setTimeout(() => {
+                popup.remove();
+            }, 3000);
+        }
+        
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        window.addEventListener('load', () => {
+            userInput.focus();
+            
+            fetch(`${BACKEND_URL}/api/health`)
+                .then(() => {
+                    console.log('✅ Бэкенд доступен');
+                })
+                .catch(() => {
+                    showPopup('⚠️ Бэкенд не доступен. Проверьте подключение.', true);
+                });
+        });
+        
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

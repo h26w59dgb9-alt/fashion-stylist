@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎸 Гранж - Стили одежды</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: 
+                linear-gradient(rgba(245, 240, 247, 0.3), rgba(245, 240, 247, 0.3)),
+                url('картинки/Flowers.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #c072d5, #b21ddc);
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(178, 29, 220, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            z-index: 1001;
+        }
+        
+        .menu-icon {
+            display: block;
+            width: 30px;
+            height: 3px;
+            background-color: white;
+            margin: 6px 0;
+            transition: 0.3s;
+        }
+        
+        .menu-btn.active .menu-icon:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+        
+        .menu-btn.active .menu-icon:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .menu-btn.active .menu-icon:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 999;
+            padding-top: 80px;
+            overflow-y: auto;
+        }
+        
+        .sidebar.active {
+            right: 0;
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
+        .menu-list {
+            list-style: none;
+        }
+        
+        .menu-list li {
+            border-bottom: 1px solid #eee;
+        }
+        
+        .menu-list a {
+            display: block;
+            padding: 18px 25px;
+            color: #333;
+            text-decoration: none;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .menu-list a:hover {
+            background-color: #f8f4f9;
+            color: #b21ddc;
+            padding-left: 30px;
+        }
+        
+        .menu-list a.active {
+            background-color: #f0e8f3;
+            color: #b21ddc;
+            border-left: 4px solid #b21ddc;
+        }
+        
+        .main-content {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+        }
+        
+        .style-hero {
+            background: linear-gradient(135deg, rgba(248, 244, 249, 0.8), rgba(233, 217, 240, 0.8));
+            border-radius: 15px;
+            padding: 50px 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .style-hero h1 {
+            color: #333;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .style-hero .subtitle {
+            color: #b21ddc;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        
+        .style-description {
+            margin-bottom: 50px;
+        }
+        
+        .description-text {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 40px;
+        }
+        
+        .description-text h2 {
+            color: #b21ddc;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0e8f3;
+            padding-bottom: 10px;
+        }
+        
+        .description-text p {
+            color: #555;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        .feature-card {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(178, 29, 220, 0.15);
+        }
+        
+        .feature-header {
+            background: linear-gradient(to right, #c072d5, #b21ddc);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .feature-header h3 {
+            font-size: 1.4rem;
+            margin: 0;
+        }
+        
+        .feature-content {
+            padding: 25px;
+        }
+        
+        .feature-content ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .feature-content li {
+            color: #666;
+            margin-bottom: 12px;
+            padding-left: 25px;
+            position: relative;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        
+        .feature-content li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #b21ddc;
+            font-weight: bold;
+        }
+        
+        .outfit-guide {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 50px;
+        }
+        
+        .outfit-guide h2 {
+            color: #b21ddc;
+            font-size: 2rem;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .guide-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .step {
+            text-align: center;
+            padding: 20px;
+            background: #f8f4f9;
+            border-radius: 10px;
+            border-left: 4px solid #c072d5;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(to right, #c072d5, #b21ddc);
+            color: white;
+            border-radius: 50%;
+            line-height: 40px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .step h4 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .step p {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        /* Стили для фоточек  */
+        .image-container {
+            width: 100%;
+            height: 460px;
+            overflow: hidden;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 2px solid #f0e8f3;
+            background-color: #f8f4f9;
+        }
+        
+        .step-image-vertical {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            transition: transform 0.5s ease;
+        }
+        
+        .step-image-vertical:hover {
+            transform: scale(1.05);
+        }
+        
+        .image-caption {
+            font-size: 0.9rem;
+            color: #888;
+            font-style: italic;
+            margin-top: 8px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        .quote-block {
+            background: linear-gradient(135deg, rgba(192, 114, 213, 0.1), rgba(178, 29, 220, 0.1));
+            border-left: 5px solid #b21ddc;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .quote-text {
+            font-size: 1.3rem;
+            color: #333;
+            font-style: italic;
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+        
+        .quote-author {
+            color: #666;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 60px;
+        }
+        
+        .nav-button {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(to right, #c072d5, #b21ddc);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(178, 29, 220, 0.25);
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(178, 29, 220, 0.35);
+            background: linear-gradient(to right, #b21ddc, #a016d0);
+        }
+        
+        .nav-button.prev {
+            background: linear-gradient(to right, #a0a0a0, #808080);
+        }
+        
+        .nav-button.prev:hover {
+            background: linear-gradient(to right, #808080, #606060);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            background-color: rgba(51, 51, 51, 0.9);
+            color: white;
+            margin-top: 60px;
+        }
+        
+        @media (max-width: 768px) {
+            .style-hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .style-hero {
+                padding: 40px 20px;
+            }
+            
+            .description-text {
+                padding: 30px 20px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .outfit-guide {
+                padding: 30px 20px;
+            }
+            
+            .guide-steps {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-button {
+                justify-content: center;
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .style-hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .description-text h2,
+            .outfit-guide h2 {
+                font-size: 1.5rem;
+            }
+            
+            .description-text p {
+                font-size: 1rem;
+            }
+            
+            .feature-header h3 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="Главная.html" class="logo">Стили одежды</a>
+        <button class="menu-btn" id="menuBtn">
+            <span class="menu-icon"></span>
+            <span class="menu-icon"></span>
+            <span class="menu-icon"></span>
+        </button>
+    </header>
+    
+    <div class="overlay" id="overlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <ul class="menu-list">
+            <li><a href="Главная.html">🏠 Главная</a></li>
+            <li><a href="ИИстраничка.html">🤖 ИИ-помощник по стилю</a></li>
+            <li><a href="минимализм.html">🎯 Минимализм</a></li>
+            <li><a href="гранж.html" class="active">🎸 Гранж</a></li>
+            <li><a href="уличный.html">🏙️ Уличный стиль</a></li>
+            <li><a href="романтичный.html">💖 Романтичный</a></li>
+            <li><a href="деловой.html">💼 Деловой</a></li>
+            <li><a href="готика.html">🖤 Готика</a></li>
+            <li><a href="классический.html">👔 Классический</a></li>
+            <li><a href="глэм-рок.html">🌟 Глэм-рок</a></li>
+        </ul>
+    </nav>
+    
+    <main class="main-content">
+        <section class="style-hero">
+            <h1>🎸 Гранж</h1>
+            <p class="subtitle">Бунтарский дух, небрежность и свобода самовыражения</p>
+            <p style="color: #666; max-width: 800px; margin: 0 auto;">Стиль, рожденный на улицах Сиэтла в 90-х, ставший символом протеста против гламура и консьюмеризма. Носить небрежно — это искусство.</p>
+        </section>
+        
+        <section class="style-description">
+            <div class="description-text">
+                <h2>Что такое гранж?</h2>
+                <p>Гранж — это не просто стиль одежды, а целая субкультура, зародившаяся в Сиэтле в конце 1980-х — начале 1990-х годов. Изначально связанный с музыкальной сценой (Nirvana, Pearl Jam, Soundgarden), гранж стал выражать протест против потребительского общества и нарочитой гламурности.</p>
+                
+                <p>Основная идея — демонстративная небрежность, отказ от традиционных стандартов красоты и моды. Вещи выглядят так, будто их носили много лет, иногда даже специально состаривают. Это стиль для тех, кто ценит комфорт выше внешнего лоска и предпочитает выражать индивидуальность через несовершенство.</p>
+                
+                <p>Сегодня гранж переживает новый виток популярности, трансформировавшись из уличного бунтарства в признанное модное направление, сохранив при своем дух свободы и антигламура.</p>
+            </div>
+            
+            <div class="quote-block">
+                <p class="quote-text">"Со времён гранжа не было ничего настоящего. Это было последнее движение, вдохновлённое музыкой или искусством."</p>
+                <p class="quote-author">Дафна Гиннесс</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <h3>🎨 Цветовая палитра</h3>
+                    </div>
+                    <div class="feature-content">
+                        <ul>
+                            <li>Приглушенные, грязные оттенки: хаки, коричневый, серый</li>
+                            <li>Темные тона: черный, темно-синий, бордовый</li>
+                            <li>Выцветшие, потертые цвета</li>
+                            <li>Сочетание несочетаемого: кислотные акценты на темном фоне</li>
+                            <li>Эффект "грязной" одежды</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <h3>👕 Базовые элементы</h3>
+                    </div>
+                    <div class="feature-content">
+                        <ul>
+                            <li>Фланелевые рубашки в клетку (часто завязанные на талии)</li>
+                            <li>Рваные джинсы и шорты</li>
+                            <li>Оверсайз свитеры и кардиганы</li>
+                            <li>Косухи и джинсовые куртки</li>
+                            <li>Потертые футболки с принтами групп</li>
+                            <li>Ботинки Dr. Martens и кеды Converse</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-header">
+                        <h3>🎭 Ключевые детали</h3>
+                    </div>
+                    <div class="feature-content">
+                        <ul>
+                            <li>Многослойность: наложение вещей друг на друга</li>
+                            <li>Рваные края, дыры, потертости</li>
+                            <li>Небрежный крой: оверсайз, асимметрия</li>
+                            <li>Состаренные, выцветшие ткани</li>
+                            <li>Минимальный уход за внешним видом (в идеале)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="outfit-guide">
+                <h2>🧥 Как создать гранж-образ</h2>
+                <div class="guide-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h4>Начните с базового слоя</h4>
+                        <p>Простая футболка (можно с принтом) или водолазка. Чем проще — тем лучше.</p>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h4>Добавьте клетку</h4>
+                        <p>Фланелевая рубашка в клетку — мастхэв. Носите расстегнутой поверх футболки или завяжите на талии.</p>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h4>Выберите "неидеальные" джинсы</h4>
+                        <p>Рваные джинсы, потертые шорты или штаны свободного кроя. Идеально, если выглядят ношеными.</p>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h4>Завершите обувью и аксессуарами</h4>
+                        <p>Кожанные ботинки, грубые сапоги или кеды. Минимум аксессуаров — может быть, кожаный браслет.</p>
+                    </div>
+                    <!-- Картинка -->
+                    <div class="step">
+                        <div class="image-container">
+                            <img src="картинки/grunge-outfit1.jpg" alt="Минималистичный образ 1" class="step-image-vertical">
+                        </div>
+                    </div>
+                    
+                    <!-- Картинка -->
+                    <div class="step">
+                        <div class="image-container">
+                            <img src="картинки/grunge-ountfit2.jpg" alt="Минималистичный образ 2" class="step-image-vertical">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <div class="nav-buttons">
+            <a href="минимализм.html" class="nav-button prev">
+                ← Предыдущий: Минимализм
+            </a>
+            <a href="уличный.html" class="nav-button">
+                Следующий: Уличный стиль →
+            </a>
+        </div>
+        
+    </main>
+    
+    <footer class="footer">
+        <p>© 2026 Стили одежды. Все права защищены.</p>
+        <p style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;">Страница стиля: Гранж</p>
+    </footer>
+
+    <script>
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        
+        menuBtn.addEventListener('click', function() {
+            menuBtn.classList.toggle('active');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+        
+        overlay.addEventListener('click', function() {
+            menuBtn.classList.remove('active');
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+        
+        const menuLinks = document.querySelectorAll('.menu-list a');
+        menuLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                menuBtn.classList.remove('active');
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
