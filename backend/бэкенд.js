@@ -12,11 +12,11 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// 🔒 Ключи ТОЛЬКО из .env файла
+// МАША НЕ ПРОСРИ КЛЮЧИ
 const API_KEY = process.env.YANDEX_API_KEY;
 const FOLDER_ID = process.env.YANDEX_FOLDER_ID;
 
-// Хранилище (упрощенное)
+// Хранилище
 const conversations = {};
 
 app.post('/api/chat', async (req, res) => {
@@ -32,7 +32,7 @@ app.post('/api/chat', async (req, res) => {
             });
         }
 
-        // 🔒 Проверка API ключей
+        // Проверка ключей
         if (!API_KEY || !FOLDER_ID) {
             console.error('❌ API ключи не настроены в .env!');
             return res.status(500).json({
@@ -41,12 +41,12 @@ app.post('/api/chat', async (req, res) => {
             });
         }
 
-        // Берем историю или создаем пустую
+        // История созд
         let history = conversations[userId] || [];
         
         const allMessages = [];
         
-        // Системный промпт
+        // Промпт
         allMessages.push({
             role: "system",
             text: `Ты — ассистент-стилист. Старайся брать информацию из открытого доступа. Отвечай развернутыми предложениями, давай необходимую информацию. 
@@ -55,7 +55,7 @@ app.post('/api/chat', async (req, res) => {
             Запомни, все твои ответы должны быть связаны со стилем.`
         });
         
-        // История (если есть)
+        // История
         if (history.length > 0) {
             const recentHistory = history.slice(-4);
             for (const msg of recentHistory) {
@@ -74,7 +74,7 @@ app.post('/api/chat', async (req, res) => {
 
         console.log('📊 Всего сообщений для Яндекса:', allMessages.length);
         
-        // Отправляем в Яндекс
+        // В Яндекс
         const response = await axios.post(
             'https://llm.api.cloud.yandex.net/foundationModels/v1/completion',
             {
@@ -229,4 +229,5 @@ app.listen(PORT, () => {
     📍 Локально: http://localhost:${PORT}
     📌 API ключи: ${API_KEY && FOLDER_ID ? '✅ Настроены' : '❌ Не настроены'}
     `);
+
 });
